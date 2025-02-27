@@ -22,6 +22,8 @@ import com.proj.core.TechXplorerGame;
 import com.proj.entities.Boss;
 import com.proj.entities.Player;
 import com.proj.quiz.QuizManager;
+import com.badlogic.gdx.maps.MapProperties;
+
 
 public class GameScreen extends ScreenAdapter {
     // Constants

@@ -18,4 +18,14 @@ public class AssetDescriptors {
 
     // Bosses
     public static final AssetDescriptor<Texture> BOSS_STEELWARD = new AssetDescriptor<>("sprites/boss_steelward.png", Texture.class);
+    public static final AssetDescriptor<Texture> BOSS_BLAZECINDER = new AssetDescriptor<>("sprites/boss_blazecinder.png", Texture.class);
+    public static final AssetDescriptor<Texture> BOSS_MEMORIX = new AssetDescriptor<>("sprites/boss_memorix.png", Texture.class);
+    public static final AssetDescriptor<Texture> BOSS_GLITCHRON = new AssetDescriptor<>("sprites/boss_glitchron.png", Texture.class);
+    public static final AssetDescriptor<Texture> BOSS_EXODUS = new AssetDescriptor<>("sprites/boss_exodus.png", Texture.class);
+
+    // Cutscene
+    public static final AssetDescriptor<Texture> CUTSCENE_INTRO = new AssetDescriptor<>("cutscene/intro.png", Texture.class);
+
+    // UI
+    public static final AssetDescriptor<Skin> UI_SKIN = new AssetDescriptor<>("ui/ui_skin.json", Skin.class);
 }
