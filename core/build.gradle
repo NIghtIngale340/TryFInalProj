@@ -22,6 +22,10 @@ dependencies {
   api "com.sudoplay.joise:joise:$joiseVersion"
   api "de.tomgrill.gdxdialogs:gdx-dialogs-core:$dialogsVersion"
   api "org.mini2Dx:universal-tween-engine:$universalTweenVersion"
+  api "org.jcodec:jcodec:0.2.5"
+  api "org.jcodec:jcodec-javase:0.2.5"
+  implementation "org.openjfx:javafx-media:23"
+  implementation "org.openjfx:javafx-swing:23"
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"

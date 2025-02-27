@@ -12,6 +12,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.proj.core.TechXplorerGame;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
+
+import java.io.File;
+import java.net.URL;
 
 public class CutSceneScreen extends ScreenAdapter {
     private final TechXplorerGame game;
@@ -26,6 +34,12 @@ public class CutSceneScreen extends ScreenAdapter {
     private float timeElapsed = 0f;
     private Texture introTexture;
     private boolean cutsceneFinished = false;
+
+    // Video playback components
+    private MediaPlayer mediaPlayer;
+    private boolean isVideoPlaying = true;
+    private boolean videoError = false;
+    private static boolean jfxInitialized = false;
 
     public CutSceneScreen(TechXplorerGame game) {
         this.game = game;
@@ -45,8 +59,59 @@ public class CutSceneScreen extends ScreenAdapter {
         dialogues.add("Dr. Fox's child must now recover CPN's lost pieces...");
         dialogues.add("Battle robot bosses and stop EXODUS from taking over the world!");
 
-        // Load cutscene texture
+        // Load fallback texture
         introTexture = game.getAssetManager().get("cutscene/intro.png", Texture.class);
+
+        // Initialize JavaFX and video playback
+        initializeVideo();
+    }
+
+    private void initializeVideo() {
+        try {
+            // Initialize JavaFX if not already initialized
+            if (!jfxInitialized) {
+                new JFXPanel(); // Initialize JavaFX platform
+                jfxInitialized = true;
+            }
+
+            // Get the video file
+            String videoPath = Gdx.files.internal("video/intro.mp4").file().getAbsolutePath();
+            File videoFile = new File(videoPath);
+
+            if (!videoFile.exists()) {
+                Gdx.app.error("CutSceneScreen", "Video file not found: " + videoPath);
+                videoError = true;
+                return;
+            }
+
+            // Create Media and MediaPlayer on the JavaFX thread
+            Platform.runLater(() -> {
+                try {
+                    Media media = new Media(videoFile.toURI().toString());
+                    mediaPlayer = new MediaPlayer(media);
+
+                    // Set up video completion handler
+                    mediaPlayer.setOnEndOfMedia(() -> {
+                        isVideoPlaying = false;
+                        Platform.runLater(() -> {
+                            mediaPlayer.dispose();
+                        });
+                    });
+
+                    // Start playing
+                    mediaPlayer.play();
+                } catch (Exception e) {
+                    Gdx.app.error("CutSceneScreen", "Error initializing video: " + e.getMessage());
+                    videoError = true;
+                    isVideoPlaying = false;
+                }
+            });
+
+        } catch (Exception e) {
+            Gdx.app.error("CutSceneScreen", "Error setting up video: " + e.getMessage());
+            videoError = true;
+            isVideoPlaying = false;
+        }
     }
 
     @Override
@@ -60,36 +125,54 @@ public class CutSceneScreen extends ScreenAdapter {
 
         // Process input (skip cutscene)
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.justTouched()) {
-            nextDialogue();
+            if (isVideoPlaying) {
+                Platform.runLater(() -> {
+                    if (mediaPlayer != null) {
+                        mediaPlayer.stop();
+                        mediaPlayer.dispose();
+                    }
+                });
+                isVideoPlaying = false;
+            } else {
+                nextDialogue();
+            }
         }
 
-        // Auto advance dialogue every 5 seconds
-        if (timeElapsed > 5f) {
-            timeElapsed = 0f;
-            nextDialogue();
-        }
-
-        // Check if cutscene is finished
-        if (cutsceneFinished) {
-            game.startGameplay();
-            return;
-        }
-
-        // Render cutscene
         viewport.apply();
         batch.setProjectionMatrix(camera.combined);
         batch.begin();
 
-        // Draw background image
-        batch.draw(introTexture, 0, 0, TechXplorerGame.WORLD_WIDTH, TechXplorerGame.WORLD_HEIGHT);
+        if (!isVideoPlaying) {
+            // Video finished or skipped, show dialogue sequence
+            batch.draw(introTexture, 0, 0, TechXplorerGame.WORLD_WIDTH, TechXplorerGame.WORLD_HEIGHT);
 
-        // Draw current dialogue text
-        if (currentDialogue < dialogues.size) {
-            font.draw(batch, dialogues.get(currentDialogue), 50, 100);
-            font.draw(batch, "Press SPACE to continue", 50, 50);
+            // Auto advance dialogue every 5 seconds
+            if (timeElapsed > 5f) {
+                timeElapsed = 0f;
+                nextDialogue();
+            }
+
+            // Draw current dialogue text
+            if (currentDialogue < dialogues.size) {
+                font.draw(batch, dialogues.get(currentDialogue), 50, 100);
+                font.draw(batch, "Press SPACE to continue", 50, 50);
+            }
+        } else if (videoError) {
+            // If video failed, show the static image
+            batch.draw(introTexture, 0, 0, TechXplorerGame.WORLD_WIDTH, TechXplorerGame.WORLD_HEIGHT);
         }
 
         batch.end();
+
+        // Check if cutscene is finished
+        if (cutsceneFinished) {
+            Platform.runLater(() -> {
+                if (mediaPlayer != null) {
+                    mediaPlayer.dispose();
+                }
+            });
+            game.startGameplay();
+        }
     }
 
     private void nextDialogue() {
@@ -107,5 +190,10 @@ public class CutSceneScreen extends ScreenAdapter {
     @Override
     public void dispose() {
         font.dispose();
+        Platform.runLater(() -> {
+            if (mediaPlayer != null) {
+                mediaPlayer.dispose();
+            }
+        });
     }
 }
