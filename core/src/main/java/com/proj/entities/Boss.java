@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
+import com.proj.assets.AssetDescriptors;
 
 public abstract class Boss {
     // Constants
@@ -47,9 +48,7 @@ public abstract class Boss {
             bossTexture.getHeight() / FRAME_ROWS);
 
         TextureRegion[] idleFrames = new TextureRegion[FRAME_COLS];
-        for (int i = 0; i < FRAME_COLS; i++) {
-            idleFrames[i] = tmp[0][i];
-        }
+        System.arraycopy(tmp[0], 0, idleFrames, 0, FRAME_COLS);
 
         idleAnimation = new Animation<>(FRAME_DURATION, idleFrames);
         currentFrame = idleFrames[0];
@@ -59,20 +58,14 @@ public abstract class Boss {
     }
 
     public static Boss createBoss(int bossIndex, AssetManager assetManager, float x, float y) {
-        switch (bossIndex) {
-            case 0:
-                return new SteelWardBoss(assetManager, x, y);
-            case 1:
-                return new BlazeCinderBoss(assetManager, x, y);
-            case 2:
-                return new MemorixBoss(assetManager, x, y);
-            case 3:
-                return new GlitchronBoss(assetManager, x, y);
-            case 4:
-                return new ExodusBoss(assetManager, x, y);
-            default:
-                return new SteelWardBoss(assetManager, x, y);
-        }
+        return switch (bossIndex) {
+            case 0 -> new SteelWardBoss(assetManager, x, y);
+            case 1 -> new BlazeCinderBoss(assetManager, x, y);
+            case 2 -> new MemorixBoss(assetManager, x, y);
+            case 3 -> new GlitchronBoss(assetManager, x, y);
+            case 4 -> new ExodusBoss(assetManager, x, y);
+            default -> new SteelWardBoss(assetManager, x, y);
+        };
     }
 
     public void update(float deltaTime) {

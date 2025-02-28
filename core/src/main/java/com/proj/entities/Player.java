@@ -60,27 +60,19 @@ public class Player {
         standingFrames = new TextureRegion[4]; // One standing frame per direction
 
         // Down animation
-        for (int i = 0; i < FRAME_COLS; i++) {
-            walkDownFrames[i] = tmp[0][i];
-        }
+        System.arraycopy(tmp[0], 0, walkDownFrames, 0, FRAME_COLS);
         standingFrames[Direction.DOWN.ordinal()] = walkDownFrames[0];
 
         // Left animation
-        for (int i = 0; i < FRAME_COLS; i++) {
-            walkLeftFrames[i] = tmp[1][i];
-        }
+        System.arraycopy(tmp[1], 0, walkLeftFrames, 0, FRAME_COLS);
         standingFrames[Direction.LEFT.ordinal()] = walkLeftFrames[0];
 
         // Right animation
-        for (int i = 0; i < FRAME_COLS; i++) {
-            walkRightFrames[i] = tmp[2][i];
-        }
+        System.arraycopy(tmp[2], 0, walkRightFrames, 0, FRAME_COLS);
         standingFrames[Direction.RIGHT.ordinal()] = walkRightFrames[0];
 
         // Up animation
-        for (int i = 0; i < FRAME_COLS; i++) {
-            walkUpFrames[i] = tmp[3][i];
-        }
+        System.arraycopy(tmp[3], 0, walkUpFrames, 0, FRAME_COLS);
         standingFrames[Direction.UP.ordinal()] = walkUpFrames[0];
 
         // Initialize animations
@@ -138,23 +130,13 @@ public class Player {
         }
 
         // Get the appropriate animation based on direction
-        Animation<TextureRegion> currentAnimation;
-        switch (currentDirection) {
-            case UP:
-                currentAnimation = walkUpAnimation;
-                break;
-            case DOWN:
-                currentAnimation = walkDownAnimation;
-                break;
-            case LEFT:
-                currentAnimation = walkLeftAnimation;
-                break;
-            case RIGHT:
-                currentAnimation = walkRightAnimation;
-                break;
-            default:
-                currentAnimation = walkDownAnimation;
-        }
+        Animation<TextureRegion> currentAnimation = switch (currentDirection) {
+            case UP -> walkUpAnimation;
+            case DOWN -> walkDownAnimation;
+            case LEFT -> walkLeftAnimation;
+            case RIGHT -> walkRightAnimation;
+            default -> walkDownAnimation;
+        };
 
         // Return the current frame from the animation
         return currentAnimation.getKeyFrame(stateTime, true);

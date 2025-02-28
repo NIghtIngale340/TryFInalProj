@@ -14,10 +14,17 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.proj.core.TechXplorerGame;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 
@@ -40,6 +47,11 @@ public class CutSceneScreen extends ScreenAdapter {
     private boolean isVideoPlaying = true;
     private boolean videoError = false;
     private static boolean jfxInitialized = false;
+
+    // JavaFX components for video rendering
+    private JFrame videoFrame;
+    private Canvas videoCanvas;
+    private MediaView mediaView;
 
     public CutSceneScreen(TechXplorerGame game) {
         this.game = game;
@@ -68,47 +80,83 @@ public class CutSceneScreen extends ScreenAdapter {
 
     private void initializeVideo() {
         try {
+            // Use System property to fix module error
+            System.setProperty("javafx.preloader", "com.sun.javafx.application.LauncherImpl");
+            System.setProperty("java.util.logging.config.file", "logging.properties");
+
             // Initialize JavaFX if not already initialized
             if (!jfxInitialized) {
-                new JFXPanel(); // Initialize JavaFX platform
+                final JFXPanel fxPanel = new JFXPanel(); // Initialize JavaFX platform
                 jfxInitialized = true;
             }
 
-            // Get the video file
-            String videoPath = Gdx.files.internal("video/intro.mp4").file().getAbsolutePath();
+            // Get the video file path
+            String videoPath = Gdx.files.internal("assets/video/intro.mp4").file().getAbsolutePath();
             File videoFile = new File(videoPath);
 
             if (!videoFile.exists()) {
                 Gdx.app.error("CutSceneScreen", "Video file not found: " + videoPath);
                 videoError = true;
+                isVideoPlaying = false;
                 return;
             }
 
-            // Create Media and MediaPlayer on the JavaFX thread
-            Platform.runLater(() -> {
-                try {
-                    Media media = new Media(videoFile.toURI().toString());
-                    mediaPlayer = new MediaPlayer(media);
+            // Create a separate frame for video display
+            SwingUtilities.invokeLater(() -> {
+                videoFrame = new JFrame("Video");
+                videoFrame.setSize(800, 480);
+                videoFrame.setLocationRelativeTo(null);
+                videoFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-                    // Set up video completion handler
-                    mediaPlayer.setOnEndOfMedia(() -> {
-                        isVideoPlaying = false;
-                        Platform.runLater(() -> {
-                            mediaPlayer.dispose();
+                JFXPanel videoPanel = new JFXPanel();
+                videoFrame.add(videoPanel);
+                videoFrame.setVisible(true);
+
+                // Create Media and MediaPlayer on the JavaFX thread
+                Platform.runLater(() -> {
+                    try {
+                        Group root = new Group();
+                        Scene scene = new Scene(root);
+                        videoPanel.setScene(scene);
+
+                        Media media = new Media(videoFile.toURI().toString());
+                        mediaPlayer = new MediaPlayer(media);
+                        mediaView = new MediaView(mediaPlayer);
+
+                        // Size the video view
+                        mediaView.setFitWidth(800);
+                        mediaView.setFitHeight(480);
+                        mediaView.setPreserveRatio(true);
+
+                        root.getChildren().add(mediaView);
+
+                        // Set up video completion handler
+                        mediaPlayer.setOnEndOfMedia(() -> {
+                            isVideoPlaying = false;
+                            Platform.runLater(() -> {
+                                if (videoFrame != null) {
+                                    videoFrame.dispose();
+                                    videoFrame = null;
+                                }
+                                mediaPlayer.dispose();
+                            });
                         });
-                    });
 
-                    // Start playing
-                    mediaPlayer.play();
-                } catch (Exception e) {
-                    Gdx.app.error("CutSceneScreen", "Error initializing video: " + e.getMessage());
-                    videoError = true;
-                    isVideoPlaying = false;
-                }
+                        // Start playing
+                        mediaPlayer.play();
+                    } catch (Exception e) {
+                        Gdx.app.error("CutSceneScreen", "Error initializing video: " + e.getMessage(), e);
+                        videoError = true;
+                        isVideoPlaying = false;
+                        if (videoFrame != null) {
+                            videoFrame.dispose();
+                            videoFrame = null;
+                        }
+                    }
+                });
             });
-
         } catch (Exception e) {
-            Gdx.app.error("CutSceneScreen", "Error setting up video: " + e.getMessage());
+            Gdx.app.error("CutSceneScreen", "Error setting up video: " + e.getMessage(), e);
             videoError = true;
             isVideoPlaying = false;
         }
@@ -132,6 +180,10 @@ public class CutSceneScreen extends ScreenAdapter {
                         mediaPlayer.dispose();
                     }
                 });
+                if (videoFrame != null) {
+                    videoFrame.dispose();
+                    videoFrame = null;
+                }
                 isVideoPlaying = false;
             } else {
                 nextDialogue();
@@ -160,6 +212,10 @@ public class CutSceneScreen extends ScreenAdapter {
         } else if (videoError) {
             // If video failed, show the static image
             batch.draw(introTexture, 0, 0, TechXplorerGame.WORLD_WIDTH, TechXplorerGame.WORLD_HEIGHT);
+        } else {
+            // While video is playing, display a message in the game window
+            font.draw(batch, "Playing intro video... Press SPACE to skip",
+                TechXplorerGame.WORLD_WIDTH/2 - 150, TechXplorerGame.WORLD_HEIGHT/2);
         }
 
         batch.end();
@@ -171,6 +227,10 @@ public class CutSceneScreen extends ScreenAdapter {
                     mediaPlayer.dispose();
                 }
             });
+            if (videoFrame != null) {
+                videoFrame.dispose();
+                videoFrame = null;
+            }
             game.startGameplay();
         }
     }
@@ -195,5 +255,9 @@ public class CutSceneScreen extends ScreenAdapter {
                 mediaPlayer.dispose();
             }
         });
+        if (videoFrame != null) {
+            videoFrame.dispose();
+            videoFrame = null;
+        }
     }
 }

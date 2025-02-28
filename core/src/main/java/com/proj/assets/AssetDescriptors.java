@@ -23,6 +23,13 @@ public class AssetDescriptors {
     public static final AssetDescriptor<Texture> BOSS_GLITCHRON = new AssetDescriptor<>("sprites/boss_glitchron.png", Texture.class);
     public static final AssetDescriptor<Texture> BOSS_EXODUS = new AssetDescriptor<>("sprites/boss_exodus.png", Texture.class);
 
+    // Boss backgrounds
+    public static final AssetDescriptor<Texture> BG_STEELWARD = new AssetDescriptor<>("backgrounds/steelward_bg.png", Texture.class);
+    public static final AssetDescriptor<Texture> BG_BLAZECINDER = new AssetDescriptor<>("backgrounds/blazecinder_bg.png", Texture.class);
+    public static final AssetDescriptor<Texture> BG_MEMORIX = new AssetDescriptor<>("backgrounds/memorix_bg.png", Texture.class);
+    public static final AssetDescriptor<Texture> BG_GLITCHRON = new AssetDescriptor<>("backgrounds/glitchron_bg.png", Texture.class);
+    public static final AssetDescriptor<Texture> BG_EXODUS = new AssetDescriptor<>("backgrounds/exodus_bg.png", Texture.class);
+
     // Cutscene
     public static final AssetDescriptor<Texture> CUTSCENE_INTRO = new AssetDescriptor<>("cutscene/intro.png", Texture.class);
 

@@ -25,7 +25,6 @@ dependencies {
   api "org.jcodec:jcodec:0.2.5"
   api "org.jcodec:jcodec-javase:0.2.5"
 
-
   api "org.openjfx:javafx-media:23:win"
   api "org.openjfx:javafx-swing:23:win"
   api "org.openjfx:javafx-base:23:win"

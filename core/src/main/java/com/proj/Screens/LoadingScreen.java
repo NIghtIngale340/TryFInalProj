@@ -38,7 +38,11 @@ public class LoadingScreen extends ScreenAdapter {
     }
 
     private void queueAssets() {
-        // Queue map assets - use the AssetDescriptors (no need for a loop)
+        // Queue map assets
+        game.getAssetManager().load(AssetDescriptors.MAP_0);
+        game.getAssetManager().load(AssetDescriptors.MAP_1);
+        game.getAssetManager().load(AssetDescriptors.MAP_2);
+        game.getAssetManager().load(AssetDescriptors.MAP_3);
         game.getAssetManager().load(AssetDescriptors.MAP_0);
         game.getAssetManager().load(AssetDescriptors.MAP_1);
         game.getAssetManager().load(AssetDescriptors.MAP_2);
@@ -46,20 +50,27 @@ public class LoadingScreen extends ScreenAdapter {
         game.getAssetManager().load(AssetDescriptors.MAP_4);
 
         // Queue player and enemy textures
-        game.getAssetManager().load("sprites/player.png", com.badlogic.gdx.graphics.Texture.class);
+        game.getAssetManager().load(AssetDescriptors.PLAYER);
 
         // Queue boss textures
-        game.getAssetManager().load("sprites/boss_steelward.png", com.badlogic.gdx.graphics.Texture.class);
-        game.getAssetManager().load("sprites/boss_blazecinder.png", com.badlogic.gdx.graphics.Texture.class);
-        game.getAssetManager().load("sprites/boss_memorix.png", com.badlogic.gdx.graphics.Texture.class);
-        game.getAssetManager().load("sprites/boss_glitchron.png", com.badlogic.gdx.graphics.Texture.class);
-        game.getAssetManager().load("sprites/boss_exodus.png", com.badlogic.gdx.graphics.Texture.class);
+        game.getAssetManager().load(AssetDescriptors.BOSS_STEELWARD);
+        game.getAssetManager().load(AssetDescriptors.BOSS_BLAZECINDER);
+        game.getAssetManager().load(AssetDescriptors.BOSS_MEMORIX);
+        game.getAssetManager().load(AssetDescriptors.BOSS_GLITCHRON);
+        game.getAssetManager().load(AssetDescriptors.BOSS_EXODUS);
+
+        // Queue boss background textures
+        game.getAssetManager().load(AssetDescriptors.BG_STEELWARD);
+        game.getAssetManager().load(AssetDescriptors.BG_BLAZECINDER);
+        game.getAssetManager().load(AssetDescriptors.BG_MEMORIX);
+        game.getAssetManager().load(AssetDescriptors.BG_GLITCHRON);
+        game.getAssetManager().load(AssetDescriptors.BG_EXODUS);
 
         // Queue cutscene assets
-        game.getAssetManager().load("cutscene/intro.png", com.badlogic.gdx.graphics.Texture.class);
+        game.getAssetManager().load(AssetDescriptors.CUTSCENE_INTRO);
 
         // Queue UI elements
-        game.getAssetManager().load("ui/ui_skin.json", com.badlogic.gdx.scenes.scene2d.ui.Skin.class);
+        game.getAssetManager().load(AssetDescriptors.UI_SKIN);
     }
 
     @Override
