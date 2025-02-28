@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.proj.assets.AssetDescriptors;
 import com.proj.Screens.CutSceneScreen;
 import com.proj.Screens.GameScreen;
@@ -29,6 +31,8 @@ public class TechXplorerGame extends Game {
     public void create() {
         batch = new SpriteBatch();
         assetManager = new AssetManager();
+
+        assetManager.setLoader(TiledMap.class, new TmxMapLoader());
 
         // Initialize the loading screen to load assets before the cutscene plays
         setScreen(new LoadingScreen(this));

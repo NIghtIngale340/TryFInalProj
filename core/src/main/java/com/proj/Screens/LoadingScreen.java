@@ -38,16 +38,12 @@ public class LoadingScreen extends ScreenAdapter {
     }
 
     private void queueAssets() {
-        // Queue map assets
-        for (int i = 0; i < 5; i++) {
-            game.getAssetManager().load("maps/map" + i + ".tmx", com.badlogic.gdx.maps.tiled.TiledMap.class);
-            game.getAssetManager().load(AssetDescriptors.MAP_0);
-            game.getAssetManager().load(AssetDescriptors.MAP_1);
-            game.getAssetManager().load(AssetDescriptors.MAP_2);
-            game.getAssetManager().load(AssetDescriptors.MAP_3);
-            game.getAssetManager().load(AssetDescriptors.MAP_4);
-
-        }
+        // Queue map assets - use the AssetDescriptors (no need for a loop)
+        game.getAssetManager().load(AssetDescriptors.MAP_0);
+        game.getAssetManager().load(AssetDescriptors.MAP_1);
+        game.getAssetManager().load(AssetDescriptors.MAP_2);
+        game.getAssetManager().load(AssetDescriptors.MAP_3);
+        game.getAssetManager().load(AssetDescriptors.MAP_4);
 
         // Queue player and enemy textures
         game.getAssetManager().load("sprites/player.png", com.badlogic.gdx.graphics.Texture.class);
