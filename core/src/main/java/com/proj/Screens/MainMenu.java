@@ -16,7 +16,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.proj.assets.AssetDescriptors;
 import com.proj.core.TechXplorerGame;
 
-public class MainMenuScreen extends ScreenAdapter {
+public class MainMenu extends ScreenAdapter {
     private final TechXplorerGame game;
     private final Stage stage;
     private final Viewport viewport;
@@ -24,7 +24,7 @@ public class MainMenuScreen extends ScreenAdapter {
     private final Texture backgroundTexture;
     private final Skin skin;
 
-    public MainMenuScreen(TechXplorerGame game) {
+    public MainMenu(TechXplorerGame game) {
         this.game = game;
 
         camera = new OrthographicCamera();

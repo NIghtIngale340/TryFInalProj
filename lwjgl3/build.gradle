@@ -37,8 +37,6 @@ dependencies {
   implementation "de.tomgrill.gdxdialogs:gdx-dialogs-desktop:$dialogsVersion"
   implementation project(':core')
   implementation("com.badlogicgames.gdx:gdx-tools:$gdxVersion"){exclude group: 'com.badlogicgames.gdx', module: 'gdx-backend-lwjgl'}
-  implementation "org.openjfx:javafx-media:23"
-  implementation "org.openjfx:javafx-swing:23"
 
 
 

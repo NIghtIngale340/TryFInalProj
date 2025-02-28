@@ -19,6 +19,8 @@ public class TechXplorerGame extends Game {
     private AssetManager assetManager;
     private SpriteBatch batch;
 
+    private String playerName = "Player";
+    private boolean isMale = true;
     // Game state
     private int currentMapIndex = 0;
     private boolean[] bossesDefeated = new boolean[5]; // Track which bosses are defeated
@@ -30,6 +32,23 @@ public class TechXplorerGame extends Game {
 
         // Initialize the loading screen to load assets before the cutscene plays
         setScreen(new LoadingScreen(this));
+    }
+
+    // Player data methods
+    public void setPlayerName(String playerName) {
+        this.playerName = playerName;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
+
+    public void setPlayerGender(boolean isMale) {
+        this.isMale = isMale;
+    }
+
+    public boolean isPlayerMale() {
+        return isMale;
     }
 
     /**
