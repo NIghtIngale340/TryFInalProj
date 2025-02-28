@@ -42,7 +42,7 @@ public class CharacterCreationScreen extends ScreenAdapter {
         skin = game.getAssetManager().get(AssetDescriptors.UI_SKIN);
 
         // Load character preview textures (you'll need to add these to your assets)
-        maleTexture = new Texture(Gdx.files.internal("sprites/player_male.png"));
+            maleTexture = new Texture(Gdx.files.internal("sprites/player_male.png"));
         femaleTexture = new Texture(Gdx.files.internal("sprites/player_female.png"));
 
         // Set up UI
