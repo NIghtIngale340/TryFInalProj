@@ -41,8 +41,8 @@ public class CharacterCreationScreen extends ScreenAdapter {
         // Load skin for UI elements
         skin = game.getAssetManager().get(AssetDescriptors.UI_SKIN);
 
-        // Load character preview textures (you'll need to add these to your assets)
-            maleTexture = new Texture(Gdx.files.internal("sprites/player_male.png"));
+        // Load character preview textures
+        maleTexture = new Texture(Gdx.files.internal("sprites/player_male.png"));
         femaleTexture = new Texture(Gdx.files.internal("sprites/player_female.png"));
 
         // Set up UI
@@ -75,35 +75,36 @@ public class CharacterCreationScreen extends ScreenAdapter {
         final TextButton maleButton = new TextButton("Male", skin, "toggle");
         final TextButton femaleButton = new TextButton("Female", skin, "toggle");
 
+
         // Set initial state
         maleButton.setChecked(true);
 
         // Add listeners
-        maleButton.addListener(new ChangeListener() {
+        ButtonGroup<TextButton> genderGroup = new ButtonGroup<>();
+        genderGroup.setMinCheckCount(1); // Ensure at least one selected
+        genderGroup.setMaxCheckCount(1); // Only one can be selected
+        genderGroup.add(maleButton);
+        genderGroup.add(femaleButton);
+
+        // Set initial selection
+        maleButton.setChecked(true);
+
+        // Add single shared listener
+        ChangeListener genderListener = new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (maleButton.isChecked()) {
-                    femaleButton.setChecked(false);
                     isMale = true;
                     characterPreview.setDrawable(new Image(maleTexture).getDrawable());
                 } else {
-                    maleButton.setChecked(true); // Ensure one is always selected
-                }
-            }
-        });
-
-        femaleButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (femaleButton.isChecked()) {
-                    maleButton.setChecked(false);
                     isMale = false;
                     characterPreview.setDrawable(new Image(femaleTexture).getDrawable());
-                } else {
-                    femaleButton.setChecked(true); // Ensure one is always selected
                 }
             }
-        });
+        };
+
+        maleButton.addListener(genderListener);
+        femaleButton.addListener(genderListener);
 
         // Create a table for gender buttons
         Table genderTable = new Table();

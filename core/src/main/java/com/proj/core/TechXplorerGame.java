@@ -8,9 +8,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.proj.assets.AssetDescriptors;
+import com.proj.Screens.CharacterCreationScreen;
 import com.proj.Screens.CutSceneScreen;
 import com.proj.Screens.GameScreen;
 import com.proj.Screens.LoadingScreen;
+import com.proj.Screens.MainMenu;
 
 public class TechXplorerGame extends Game {
     // Constants
@@ -57,16 +59,24 @@ public class TechXplorerGame extends Game {
 
     /**
      * Start the main game after all resources are loaded
+     * Transition to cutscene
      */
     public void startGame() {
         setScreen(new CutSceneScreen(this));
     }
 
     /**
-     * Start gameplay after cutscene is finished
+     * Go to main menu after cutscene is finished
+     */
+    public void goToMainMenu() {
+        setScreen(new MainMenu(this));
+    }
+
+    /**
+     * Start gameplay after character creation
      */
     public void startGameplay() {
-        setScreen(new GameScreen(this));
+        setScreen(new GameScreen(this, currentMapIndex));
     }
 
     /**
@@ -77,7 +87,7 @@ public class TechXplorerGame extends Game {
             bossesDefeated[currentMapIndex] = true;
             currentMapIndex++;
             // Reload game screen with new map
-            setScreen(new GameScreen(this));
+            setScreen(new GameScreen(this, currentMapIndex));
         } else {
             // Game completed - could show an ending cutscene
             Gdx.app.log("TechXplorer", "Game completed! All bosses defeated.");

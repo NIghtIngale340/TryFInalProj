@@ -231,7 +231,8 @@ public class CutSceneScreen extends ScreenAdapter {
                 videoFrame.dispose();
                 videoFrame = null;
             }
-            game.startGameplay();
+            // Transition to MainMenu instead of GameScreen
+            game.goToMainMenu();
         }
     }
 

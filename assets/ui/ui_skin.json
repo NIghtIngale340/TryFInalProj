@@ -129,17 +129,20 @@ com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton$ImageTextButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
   default: {
     font: font
-  }
+  },
   window: {
     font: window
-  }
+  },
   list: {
     font: list
-  }
+  },
   subtitle: {
     font: subtitle
+  },
+  title: {     // Add the new style
+    font: font  // Using default font, change to specific font if needed
   }
-}
+},
 com.badlogic.gdx.scenes.scene2d.ui.List$ListStyle: {
   default: {
     font: list

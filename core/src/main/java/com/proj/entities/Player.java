@@ -1,5 +1,6 @@
 package com.proj.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -41,12 +42,18 @@ public class Player {
         UP, DOWN, LEFT, RIGHT
     }
 
-    public Player(AssetManager assetManager, float x, float y) {
+    public Player(AssetManager assetManager, float x, float y, boolean isMale) {
         this.x = x;
         this.y = y;
 
-        // Load player sprite sheet
-        Texture playerTexture = assetManager.get("sprites/player.png", Texture.class);
+        // Load appropriate player sprite sheet based on gender
+        Texture playerTexture;
+        if (isMale) {
+            playerTexture = new Texture(Gdx.files.internal("sprites/player_male.png"));
+        } else {
+            playerTexture = new Texture(Gdx.files.internal("sprites/player_female.png"));
+        }
+
         TextureRegion[][] tmp = TextureRegion.split(playerTexture,
             playerTexture.getWidth() / FRAME_COLS,
             playerTexture.getHeight() / FRAME_ROWS);
@@ -60,19 +67,27 @@ public class Player {
         standingFrames = new TextureRegion[4]; // One standing frame per direction
 
         // Down animation
-        System.arraycopy(tmp[0], 0, walkDownFrames, 0, FRAME_COLS);
+        for (int i = 0; i < FRAME_COLS; i++) {
+            walkDownFrames[i] = tmp[0][i];
+        }
         standingFrames[Direction.DOWN.ordinal()] = walkDownFrames[0];
 
         // Left animation
-        System.arraycopy(tmp[1], 0, walkLeftFrames, 0, FRAME_COLS);
+        for (int i = 0; i < FRAME_COLS; i++) {
+            walkLeftFrames[i] = tmp[1][i];
+        }
         standingFrames[Direction.LEFT.ordinal()] = walkLeftFrames[0];
 
         // Right animation
-        System.arraycopy(tmp[2], 0, walkRightFrames, 0, FRAME_COLS);
+        for (int i = 0; i < FRAME_COLS; i++) {
+            walkRightFrames[i] = tmp[2][i];
+        }
         standingFrames[Direction.RIGHT.ordinal()] = walkRightFrames[0];
 
         // Up animation
-        System.arraycopy(tmp[3], 0, walkUpFrames, 0, FRAME_COLS);
+        for (int i = 0; i < FRAME_COLS; i++) {
+            walkUpFrames[i] = tmp[3][i];
+        }
         standingFrames[Direction.UP.ordinal()] = walkUpFrames[0];
 
         // Initialize animations

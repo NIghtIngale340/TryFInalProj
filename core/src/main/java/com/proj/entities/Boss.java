@@ -1,11 +1,14 @@
 package com.proj.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.MathUtils;
 import com.proj.assets.AssetDescriptors;
 
 public abstract class Boss {
@@ -14,13 +17,21 @@ public abstract class Boss {
     protected static final int FRAME_ROWS = 1;
     protected static final float FRAME_DURATION = 0.15f;
 
+    // Animation constants
+    protected static final float FLOAT_AMPLITUDE = 5f;
+    protected static final float FLOAT_SPEED = 2f;
+
     // Common properties
     protected float x;
     protected float y;
+    protected float originalY;
     protected float width = 64f; // Bosses are larger than player
     protected float height = 64f;
     protected float stateTime = 0;
     protected Rectangle bounds = new Rectangle();
+    protected boolean isSpawning = true;
+    protected float spawnTime = 0;
+    protected static final float SPAWN_DURATION = 1.5f;
 
     // Animation
     protected Animation<TextureRegion> idleAnimation;
@@ -35,12 +46,24 @@ public abstract class Boss {
     public Boss(AssetManager assetManager, float x, float y, String texturePath, String bgTexturePath, String name, String description) {
         this.x = x;
         this.y = y;
+        this.originalY = y;
         this.name = name;
         this.description = description;
 
         // Load textures
-        Texture bossTexture = assetManager.get(texturePath, Texture.class);
-        battleBackgroundTexture = assetManager.get(bgTexturePath, Texture.class);
+        Texture bossTexture;
+        if (assetManager.isLoaded(texturePath)) {
+            bossTexture = assetManager.get(texturePath, Texture.class);
+        } else {
+            // Fallback in case texture isn't in AssetManager
+            bossTexture = new Texture(Gdx.files.internal(texturePath));
+        }
+
+        if (assetManager.isLoaded(bgTexturePath)) {
+            battleBackgroundTexture = assetManager.get(bgTexturePath, Texture.class);
+        } else {
+            battleBackgroundTexture = new Texture(Gdx.files.internal(bgTexturePath));
+        }
 
         // Create animation frames
         TextureRegion[][] tmp = TextureRegion.split(bossTexture,
@@ -70,7 +93,24 @@ public abstract class Boss {
 
     public void update(float deltaTime) {
         stateTime += deltaTime;
+
+        if (isSpawning) {
+            // Handle spawn animation
+            spawnTime += deltaTime;
+            if (spawnTime >= SPAWN_DURATION) {
+                isSpawning = false;
+            }
+        }
+
+        // Apply floating effect regardless of spawn state
+        float floatingY = originalY + FLOAT_AMPLITUDE * MathUtils.sin(stateTime * FLOAT_SPEED);
+        y = floatingY;
+
+        // Update animation frame
         currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+
+        // Update collision bounds
+        updateBounds();
     }
 
     private void updateBounds() {
@@ -78,7 +118,45 @@ public abstract class Boss {
     }
 
     public void render(SpriteBatch batch) {
-        batch.draw(currentFrame, x, y, width, height);
+        Color oldColor = batch.getColor().cpy();
+
+        if (isSpawning) {
+            // Apply spawn animation visual effect
+            float progress = spawnTime / SPAWN_DURATION;
+
+            // Visual effects during spawn
+            float scale = MathUtils.lerp(0.4f, 1.0f, progress);
+            float alpha = MathUtils.lerp(0.3f, 1.0f, progress);
+
+            // Set alpha for transparency effect
+            batch.setColor(1, 1, 1, alpha);
+
+            // Calculate centered position for scaling
+            float scaledWidth = width * scale;
+            float scaledHeight = height * scale;
+            float xOffset = (width - scaledWidth) / 2;
+            float yOffset = (height - scaledHeight) / 2;
+
+            // Draw scaled with glow effect
+            batch.draw(currentFrame, x + xOffset, y + yOffset, scaledWidth, scaledHeight);
+
+            // Draw additional frame with glow effect if early in spawn
+            if (progress < 0.5f) {
+                batch.setColor(1, 1, 1, 0.3f * (1 - progress * 2));
+                float glowScale = scale * 1.2f;
+                float glowWidth = width * glowScale;
+                float glowHeight = height * glowScale;
+                float glowXOffset = (width - glowWidth) / 2;
+                float glowYOffset = (height - glowHeight) / 2;
+                batch.draw(currentFrame, x + glowXOffset, y + glowYOffset, glowWidth, glowHeight);
+            }
+        } else {
+            // Normal rendering
+            batch.draw(currentFrame, x, y, width, height);
+        }
+
+        // Restore original color
+        batch.setColor(oldColor);
     }
 
     public void renderBattleBackground(SpriteBatch batch) {
@@ -95,6 +173,10 @@ public abstract class Boss {
 
     public String getDescription() {
         return description;
+    }
+
+    public boolean isSpawning() {
+        return isSpawning;
     }
 
     public void dispose() {

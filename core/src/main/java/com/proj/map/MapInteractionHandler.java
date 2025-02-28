@@ -5,12 +5,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class MapInteractionHandler {
-    private mapManager mapManager;
+
     private Array<Rectangle> collisionObjects;
 
-    public MapInteractionHandler(mapManager mapManager) {
-        this.mapManager = mapManager;
-        this.collisionObjects = mapManager.getCollisionObjects();
+    public MapInteractionHandler(Array<Rectangle> collisionObjects) {
+       this.collisionObjects = collisionObjects;
     }
 
     public boolean isCollidingWithMap(Rectangle entityBounds) {
@@ -22,9 +21,10 @@ public class MapInteractionHandler {
         return false;
     }
 
-    public void updateCollisionObjects() {
+    public void updateCollisionObjects(Array<Rectangle> newcollisionObjects) {
         // Call this when map changes
-        this.collisionObjects = mapManager.getCollisionObjects();
+        this.collisionObjects.clear();
+        this.collisionObjects.addAll(newcollisionObjects);
     }
 
     public Vector2 adjustPositionForCollision(Vector2 currentPosition, Vector2 targetPosition, float width, float height) {
